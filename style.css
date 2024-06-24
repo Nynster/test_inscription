@@ -16,16 +16,69 @@
 #container_box_form{
     background-color: white;
     width: 300px;
-    height: 300px;
+    height: 350px;
     border-radius: 25px;
     display: flex;
     justify-content: center;
     flex-direction: column;
     align-items: center;
-
+    box-shadow: 10px 10px 5px black;
 }
 
 .one{
+    margin: 10px;
+}
+
+.button_co_form{
+    padding-right: 30px;
+    padding-left: 30px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background-color: blue;
+    border-radius: 10px;
+    color : white;
+    text-decoration: none;
+    cursor: pointer;
+}
+.button_co_form:hover{
+    filter: brightness(2);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#container_connexion{
+    background-color: blue;
+    height: 1000px;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-wrap: wrap;
+}
+
+#connexion_items{
+    width: 300px;
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 5px 5px 3px black;
+}
+
+.bat_inp{
     margin: 10px;
 }
 

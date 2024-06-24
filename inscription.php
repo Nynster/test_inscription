@@ -27,7 +27,7 @@ if (isset($_POST['valider'])) {
                 $message = "Votre compte a bien été créé";
             
                 // Redirection vers index.html
-                header("Location: index.html");
+                header("Location: connexion.php");
                 exit();
             } else {
                 if ($controlmail > 0) {
@@ -41,10 +41,11 @@ if (isset($_POST['valider'])) {
         $message = "Remplissez tous les champs*";
     }
 }
-?>
 
+
+echo'
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -83,11 +84,13 @@ if (isset($_POST['valider'])) {
             ?></i>
             </p>
         </div>
+        <div>
+            <a href="connexion.php" class="button_co_form">connexion</a>
       </div>
     </form>
   </div>
 </body>
-</html>
+</html>'
 
-
+?>
 

@@ -1,14 +1,21 @@
 <?php
-// Connexion à la base de données
-$connexion = new PDO('mysql:host=localhost;dbname=base_user_1', 'root', '');
+// Connexion à la base de données avec gestion des exceptions
+try {
+    $connexion = new PDO('mysql:host=localhost;dbname=base_user_1', 'root', '', array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
+} catch (Exception $e) {
+    die('Erreur : ' . $e->getMessage());
+}
 
 if (isset($_POST['valider'])) {
     if (!empty($_POST['username']) && !empty($_POST['mail']) && !empty($_POST['password'])) {
         $username = htmlspecialchars($_POST['username']);
-        $mail = htmlspecialchars($_POST['mail']);
-        $mdp = sha1($_POST['password']);
+        $mail = filter_var($_POST['mail'], FILTER_VALIDATE_EMAIL);
+        $password = $_POST['password'];
 
-        if (strlen($_POST['password']) < 7) {
+        // Validation de l'email
+        if (!$mail) {
+            $message = "Adresse e-mail invalide*";
+        } elseif (strlen($password) < 7) {
             $message = "Votre mot de passe est trop court*";
         } else {
             // Vérification de l'email
@@ -22,17 +29,24 @@ if (isset($_POST['valider'])) {
             $controlusername = $testusername->rowCount();
 
             if ($controlmail == 0 && $controlusername == 0) {
+                // Hachage du mot de passe avec bcrypt
+                $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+
                 $insertion = $connexion->prepare("INSERT INTO user(username, mail, password) VALUES(?, ?, ?)");
-                $insertion->execute(array($username, $mail, $mdp));
-                $message = "Votre compte a bien été créé";
-            
-                // Redirection vers index.html
-                header("Location: connexion.php");
-                exit();
+                if ($insertion->execute(array($username, $mail, $hashedPassword))) {
+                    $message = "Votre compte a bien été créé";
+
+                    // Redirection vers connexion.php
+                    header("Location: connexion.php");
+                    exit();
+                } else {
+                    $message = "Une erreur est survenue lors de la création de votre compte*";
+                }
             } else {
                 if ($controlmail > 0) {
                     $message = "Votre adresse mail existe déjà";
-                } elseif ($controlusername > 0) {
+                }
+                if ($controlusername > 0) {
                     $message = "Votre nom d'utilisateur existe déjà";
                 }
             }
@@ -41,7 +55,6 @@ if (isset($_POST['valider'])) {
         $message = "Remplissez tous les champs*";
     }
 }
-
 
 echo'
 <!DOCTYPE html>

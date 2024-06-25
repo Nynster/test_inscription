@@ -1,29 +1,37 @@
 <?php
-$connexion = new PDO('mysql:host=localhost;dbname=base_user_1', 'root', '');
-if(isset($_POST['valider'])){
-    if(!empty($_POST['username']) AND !empty($_POST['password'])){
-        $username = htmlspecialchars($_POST['username']);
-        $password = sha1($_POST['password']);
-        $req = $connexion -> prepare("SELECT * FROM user WHERE username =? AND password = ?");
-        $req->execute(array($username,$password));
-        $cpt = $req->rowCount();
-        
-        if($cpt==1){
-            $message = "votre compte a bien été trouvé";
-             // Redirection vers index.html
-             header("Location: index.html");
-             exit();
-        }else{
-            $message = "Désolé mais nous ne trouvons pas ce compte...";
-        }
-    }else{
-        $message="Veuillez remplir tous les champs";
-    }
-    
+// Connexion à la base de données avec gestion des exceptions
+try {
+    $connexion = new PDO('mysql:host=localhost;dbname=base_user_1', 'root', '', array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
+} catch (Exception $e) {
+    die('Erreur : ' . $e->getMessage());
 }
 
+if (isset($_POST['valider'])) {
+    if (!empty($_POST['username']) && !empty($_POST['password'])) {
+        $username = htmlspecialchars($_POST['username']);
+        $password = $_POST['password'];
 
+        // Récupération de l'utilisateur depuis la base de données
+        $req = $connexion->prepare("SELECT * FROM user WHERE username = ?");
+        $req->execute(array($username));
+        $user = $req->fetch(PDO::FETCH_ASSOC);
 
+        // Vérification du mot de passe
+        if ($user && password_verify($password, $user['password'])) {
+            // Initialiser la session ou les variables utilisateur
+            session_start();
+            $_SESSION['username'] = $username;
+
+            // Redirection vers index.html
+            header("Location: index.html");
+            exit();
+        } else {
+            $message = "Désolé mais nous ne trouvons pas ce compte...";
+        }
+    } else {
+        $message = "Veuillez remplir tous les champs";
+    }
+}
 ?>
 
 
@@ -37,13 +45,13 @@ if(isset($_POST['valider'])){
 </head>
 <body>
     <div id="container_connexion">
-        <form action="" method="POST">
+        <form action="" method="POST"> 
             <div id="connexion_items">
                 <div>
                     <h1>Connexion</h1>
                 </div>
                 <div>
-                    <input class="bat_inp" type="text" name="username" placeholder="votre mot de passe" required>
+                    <input class="bat_inp" type="text" name="username" placeholder="votre pseudo" required>
                 </div>
                 <div>
                     <input class="bat_inp" type="password" name="password" placeholder="votre mot de passe" required>
